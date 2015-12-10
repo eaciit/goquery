@@ -3,6 +3,8 @@ package goquery
 import (
 	"github.com/andybalholm/cascadia"
 	"golang.org/x/net/html"
+	"strconv"
+	"strings"
 )
 
 type siblingType int
@@ -24,7 +26,27 @@ const (
 // elements, filtered by a selector. It returns a new Selection object
 // containing these matched elements.
 func (s *Selection) Find(selector string) *Selection {
-	return pushStack(s, findWithMatcher(s.Nodes, cascadia.MustCompile(selector)))
+	//--- juragan360 - check if selector has :
+	if strings.Contains(selector, ":eq(") {
+		selectors := strings.Split(selector, ":")
+		selectorTemp := selectors[0]
+		snode := s.Find(selectorTemp)
+		if strings.HasPrefix(selectors[1], "eq(") {
+			eqIndexText := strings.Split(strings.Split(selectors[1], "eq(")[1], ")")[0]
+			eqIndex, _ := strconv.Atoi(eqIndexText)
+			snode = snode.Eq(eqIndex)
+		}
+		selector = strings.Join(selectors[2:], "")
+		if selector == "" {
+			return snode
+		} else {
+			return pushStack(s, findWithMatcher(s.Nodes, cascadia.MustCompile(selector)))
+
+		}
+	} else {
+		//--- end of juragan360 modif
+		return pushStack(s, findWithMatcher(s.Nodes, cascadia.MustCompile(selector)))
+	}
 }
 
 // FindMatcher gets the descendants of each element in the current set of matched
