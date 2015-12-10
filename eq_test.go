@@ -15,13 +15,13 @@ type ColumnSetting struct {
 func TestDirectEq(t *testing.T) {
 	ds := []Data{}
 	settings := []ColumnSetting{
-		{"Code", "td:eq(0)"},
-		{"ListingDate", "td:eq(1)"},
-		{"Price", "td:eq(5)"},
+		{"Code", "td:nth-child(1)"},
+		{"ListingDate", "td:nth-child(1)"},
+		{"Price", "td:nth-child(5)"},
 	}
 
 	doc, _ := goquery.NewDocument("http://www.shfe.com.cn/en/products/Gold/")
-	rows := doc.Find(".listshuju:eq(0) tr")
+	rows := doc.Find(".listshuju:nth-child(1) tr")
 	rows.Each(func(i int, sel *goquery.Selection) {
 		d := Data{}
 		for _, s := range settings {
